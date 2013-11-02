@@ -13,8 +13,9 @@
 //= require jquery
 //= require jquery_ujs
 //= require turbolinks
-//= require underscore
-//= require backbone
+//= require sprintf/src/sprintf
+//= require underscore/underscore
+//= require backbone/backbone
 //= require tsuga_demo
 //= require_tree ../templates
 //= require_tree ./models
