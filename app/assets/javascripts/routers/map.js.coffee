@@ -14,12 +14,10 @@ tsuga.Routers.Map = Backbone.Router.extend
     @clustersView = new tsuga.Views.Clusters
       parent:   @view
       clusters: @clusters
-      lines:    @flags.get('lines')
+      flags:    @flags
 
     this.listenTo @map,      'change:position', this._updateNavigation
     this.listenTo @map,      'change:position', this._updateClusters
-
-    this.listenTo @flags,    'change:lines',    => (@clustersView.setShowLines(@flags.get('lines')))
     this.listenTo @flags,    'change',          this._updateNavigation
 
     this.listenToOnce @view, 'idle:viewport', =>

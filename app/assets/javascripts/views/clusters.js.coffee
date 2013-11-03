@@ -3,8 +3,8 @@ tsuga.Views.Clusters = Backbone.Model.extend
   initialize: (options)->
     @clusters  = options.clusters # tsuga.Collections.Clusters
     @parent    = options.parent   # tsuga.Views.Map
+    @flags     = options.flags    # tsuga.Models.Flags
     @views     = {}               # of tsuga.Views.Cluster
-    @showLines = options.lines
 
     this.listenTo @clusters, 'add',    this._addCluster
     this.listenTo @clusters, 'remove', this._removeCluster
@@ -14,18 +14,12 @@ tsuga.Views.Clusters = Backbone.Model.extend
   render: ->
     null
 
-  setShowLines: (value) ->
-    @showLines = value
-    for id, cluster of @views
-      cluster.setShowLines(value)
-
-
   _addCluster: (cluster, collection) ->
     # console.log '_addCluster'
     view = new tsuga.Views.Cluster
       cluster:  cluster
       parent:   @parent
-      lines:    @showLines
+      flags:    @flags
     view.render()
     @views[cluster.id] = view
 

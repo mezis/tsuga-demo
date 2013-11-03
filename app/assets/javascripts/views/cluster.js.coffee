@@ -3,9 +3,11 @@ tsuga.Views.Cluster = Backbone.Model.extend
 
   initialize: (options)->
     @cluster  = options.cluster # tsuga.Models.Cluster
+    @flags    = options.flags   # tsuga.Models.Flags
     @parent   = options.parent  # tsuga.Views.Map
     @map      = @parent.map     # google.maps.map
-    @lines    = options.lines
+
+    this.listenTo @flags, 'change:lines', this._onChangeFlags
 
     @circle   = null
     @line     = null
@@ -27,7 +29,7 @@ tsuga.Views.Cluster = Backbone.Model.extend
       @circle = new google.maps.Circle(options)
       google.maps.event.addListener @circle, 'click', => (this._onClick())
 
-    if !@line && @lines && cluster.parent.lat
+    if !@line && @flags.get('lines') && cluster.parent.lat
       parent = new google.maps.LatLng(cluster.parent.lat, cluster.parent.lng)
       @line = new google.maps.Polyline
         path:           [center, parent]
@@ -63,14 +65,12 @@ tsuga.Views.Cluster = Backbone.Model.extend
     @text.setMap(null)  if @text
 
 
-  setShowLines: (value) ->
-    if @lines = value
+  _onChangeFlags: () ->
+    if @flags.get('lines')
       this.render()
     else
-      @line.setMap(null)  if @line
-      # this.unrender()
+      @line.setMap(null) if @line
       @line = null
-      # this.render()
 
 
   _onClick: () ->
