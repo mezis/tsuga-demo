@@ -35,6 +35,7 @@ tsuga.Views.Clusters = Backbone.Model.extend
   _updateCounters: ->
     this._delayed =>
       $('#js-cluster-count').text(@clusters.size())      
+      $('#js-point-count').text(@clusters.totalWeight())      
 
 
   # FIXME: this shoud be factored out in a mixin
