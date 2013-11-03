@@ -1,4 +1,3 @@
-_flagsRegexp = /^(?:([^:,]+):([^:,]+))(?:,([^:,]+):([^:,]+))*$/
 
 tsuga.Models.Flags = Backbone.Model.extend
   defaults: ->
@@ -8,12 +7,11 @@ tsuga.Models.Flags = Backbone.Model.extend
 
   parse: (string) ->
     # console.log "tsuga.Models.Flags#parse '#{string}'"
-    matches = _flagsRegexp.exec(string)
+    matches = this._flagsRegexp.exec(string)
     changes = {}
-    return unless matches?
-    while matches.length > 1
-      value = matches.pop()
-      key   = matches.pop()
+    for pair in string.split(',')
+      [_all, key, value] = this._flagsRegexp.exec(pair)
+      continue unless key && value
       parsedValue = this._parseValue(value)
       changes[key] = parsedValue
       # console.log "  #{key} -> #{value} -> #{parsedValue}"
@@ -44,3 +42,7 @@ tsuga.Models.Flags = Backbone.Model.extend
       else string
     # console.log "tsuga.Models.Flags#_parseValue '#{string}' -> #{result}"
     return result
+
+  _flagsRegexp: /^([^:,]+):([^:,]+)$/
+
+
