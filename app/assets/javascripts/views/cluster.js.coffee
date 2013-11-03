@@ -7,7 +7,7 @@ tsuga.Views.Cluster = Backbone.Model.extend
     @parent   = options.parent  # tsuga.Views.Map
     @map      = @parent.map     # google.maps.map
 
-    this.listenTo @flags, 'change:lines', this._onChangeFlags
+    this.listenTo @flags, 'change', this._onChangeFlags
 
     @circle   = null
     @line     = null
@@ -38,7 +38,7 @@ tsuga.Views.Cluster = Backbone.Model.extend
         strokeOpacity:  0.2
         strokeWeight:   2
 
-    if !@text && cluster.weight > 1
+    if !@text && @flags.get('labels') && cluster.weight > 1
       textOptions =
         content:        cluster.weight,
         boxClass:       'cluster-info'
@@ -58,19 +58,23 @@ tsuga.Views.Cluster = Backbone.Model.extend
     @text.open(@map)    if @text
 
 
-  unrender: ->
-    # console.log 'tsuga.Views.Cluster#unrender'
+  remove: ->
+    # console.log 'tsuga.Views.Cluster#remove'
+    this.stopListening()
     @circle.setMap(null)
     @line.setMap(null)  if @line
     @text.setMap(null)  if @text
+    @circle = @line = @text = null
 
 
   _onChangeFlags: () ->
-    if @flags.get('lines')
-      this.render()
-    else
+    unless @flags.get('lines')
       @line.setMap(null) if @line
       @line = null
+    unless @flags.get('labels')
+      @text.setMap(null) if @text
+      @text = null
+    this.render()
 
 
   _onClick: () ->

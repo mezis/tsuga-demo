@@ -28,7 +28,7 @@ tsuga.Views.Clusters = Backbone.Model.extend
     # console.log '_removeCluster'
     view = @views[cluster.id]
     return unless view
-    view.unrender()
+    view.remove()
     delete @views[cluster.id]
 
 
