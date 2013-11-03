@@ -7,7 +7,8 @@ tsuga.Views.Cluster = Backbone.Model.extend
     @parent   = options.parent  # tsuga.Views.Map
     @map      = @parent.map     # google.maps.map
 
-    this.listenTo @flags, 'change', this._onChangeFlags
+    this.listenTo @flags, 'change:labels', this._onChangeFlags
+    this.listenTo @flags, 'change:lines',  this._onChangeFlags
 
     @circle   = null
     @line     = null
