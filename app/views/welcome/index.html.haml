@@ -10,16 +10,27 @@
         View on Github
 
   %nav.navbar.navbar-default.navbar-fixed-bottom{ role:'navigation' }
-    %p.navbar-text.pull-left
-      Zoom:
-      %span#js-zoomlevel
+    .collapse.navbar-collapse
+      %p.navbar-text
+        Zoom:
+        %span#js-zoomlevel
+      %p.navbar-text
+        %span#js-cluster-count ?
+        clusters
+      %p.navbar-text
+        %span#js-point-count ?
+        points
 
-    %p.navbar-text.pull-right
-      %span#js-cluster-count ?
-      clusters
-    %p.navbar-text.pull-right
-      %span#js-point-count ?
-      points
+      .navbar-form.navbar-left.btn-group#map-flags
+        %label.btn
+          %input.js-lines{ type: 'checkbox' }
+          Lines
+        %label.btn
+          %input.js-labels{ type: 'checkbox' }
+          Labels
+        %label.btn
+          %input.js-points{ type: 'checkbox' }
+          Points
 
 
   #map-container

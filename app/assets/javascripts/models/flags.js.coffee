@@ -1,11 +1,10 @@
 _flagsRegexp = /^(?:([^:,]+):([^:,]+))(?:,([^:,]+):([^:,]+))*$/
-_flagsKeys = ['lines', 'points']
 
 tsuga.Models.Flags = Backbone.Model.extend
   defaults: ->
     lines:  false
     points: false
-
+    labels: true
 
   parse: (string) ->
     # console.log "tsuga.Models.Flags#parse '#{string}'"
@@ -22,11 +21,12 @@ tsuga.Models.Flags = Backbone.Model.extend
 
   # TODO: this is cacheable
   serialize: ->
-    pairs = _.map _flagsKeys, (key) =>
+    pairs = _.map this.keys, (key) =>
       value = this._dumpValue(this.get(key))
       "#{key}:#{value}"
     pairs.join()
 
+  keys: ['lines', 'points', 'labels']
 
   _dumpValue: (value) ->
     switch typeof(value)

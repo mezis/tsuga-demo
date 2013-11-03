@@ -7,6 +7,7 @@ tsuga.Routers.Map = Backbone.Router.extend
 
   initialize: ->
     @flags        = new tsuga.Models.Flags()
+    @flagsView    = new tsuga.Views.Flags({ model: @flags })
     @map          = new tsuga.Models.Map()
     @view         = new tsuga.Views.Map({ model: @map })
     @clusters     = new tsuga.Collections.Clusters()
