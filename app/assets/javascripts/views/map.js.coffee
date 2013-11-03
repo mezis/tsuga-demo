@@ -26,7 +26,7 @@ tsuga.Views.Map = Backbone.View.extend
 
   _getNewMap: ->
     mapOptions = 
-      mapTypeId:          google.maps.MapTypeId.TERRAIN
+      mapTypeId:          google.maps.MapTypeId.ROADMAP
       disableDefaultUI:   true
       maxZoom:            19
       minZoom:            2

@@ -15,6 +15,11 @@ tsuga.Routers.Map = Backbone.Router.extend
       parent:   @view
       clusters: @clusters
       flags:    @flags
+    @points       = new tsuga.Collections.Points()
+    @pointsView   = new tsuga.Views.Points
+      parent:   @view
+      models:   @points
+      flags:    @flags
 
     this.listenTo @map,      'change:position', this._updateNavigation
     this.listenTo @map,      'change:position', this._updateClusters
@@ -24,6 +29,7 @@ tsuga.Routers.Map = Backbone.Router.extend
       console.log '*** first update'
       this._updateNavigation()
       this._updateClusters()
+    this.listenTo @flags,    'change:points',   this._updatePoints
 
     @view.render()
     console.log 'tsuga.Routers.Map#initialize done'
@@ -55,15 +61,30 @@ tsuga.Routers.Map = Backbone.Router.extend
 
   _updateClusters: ->
     console.log 'tsuga.Routers.Map#_updateClusters'
-    pos = @map.get('position')
-    v   = @map.get('viewport')
+    @clusters.fetch
+      data: this._getRect()
+      success: => (this._updatePoints())
 
+
+  _updatePoints: (collection, response, options) ->
+    console.log 'tsuga.Routers.Map#_updatePoints'
+    if @flags.get('points') && @clusters.totalWeight() < 2000
+      @points.fetch
+        data: this._getRect()
+        success: =>
+          @points.trigger('update')
+    else
+      @points.reset()
+
+
+  _getRect: ->
     position = @map.get('position')
     viewport = @map.get('viewport')
-    @clusters.fetch
-      data:
-        z:   position.zoom
-        n:   viewport.n
-        s:   viewport.s
-        e:   viewport.e
-        w:   viewport.w
+    result =
+      z:   position.zoom
+      n:   viewport.n
+      s:   viewport.s
+      e:   viewport.e
+      w:   viewport.w
+
+
