@@ -24,11 +24,6 @@ tsuga.Routers.Map = Backbone.Router.extend
     this.listenTo @map,      'change:position', this._updateNavigation
     this.listenTo @map,      'change:position', this._updateClusters
     this.listenTo @flags,    'change',          this._updateNavigation
-
-    this.listenToOnce @view, 'idle:viewport', =>
-      console.log '*** first update'
-      this._updateNavigation()
-      this._updateClusters()
     this.listenTo @flags,    'change:points',   this._updatePoints
 
     @view.render()
