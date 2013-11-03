@@ -2,31 +2,32 @@
 tsuga.Views.Cluster = Backbone.Model.extend
 
   initialize: (options)->
-    @cluster = options.cluster # tsuga.Models.Cluster
-    @parent  = options.parent  # tsuga.Views.Map
-    @map     = @parent.map     # google.maps.map
-    @circle  = null
-    @line    = null
-    @text    = null
+    @cluster  = options.cluster # tsuga.Models.Cluster
+    @parent   = options.parent  # tsuga.Views.Map
+    @map      = @parent.map     # google.maps.map
+    @lines    = options.lines
 
-  render: ->
+    @circle   = null
+    @line     = null
+    @text     = null
+
+  _prepare: ->
     # console.log 'tsuga.Views.Cluster#render'
-    cluster = @cluster.attributes
-    center = new google.maps.LatLng(cluster.lat, cluster.lng)
+    cluster   = @cluster.attributes
+    center    = new google.maps.LatLng(cluster.lat, cluster.lng)
+    fillColor = if (cluster.weight == 1) then '#ff00ff' else '#ff0000'
 
-    if cluster.weight == 1
-      fillColor =     '#ff00ff'
-    else
-      fillColor =     '#ff0000'
-    options =
-      strokeOpacity:  0.0
-      fillColor:      fillColor
-      fillOpacity:    0.2
-      center:         center
-      radius:         this._getRadius(center, cluster)
-    @circle = new google.maps.Circle(options)
+    if !@circle
+      options =
+        strokeOpacity:  0.0
+        fillColor:      fillColor
+        fillOpacity:    0.2
+        center:         center
+        radius:         this._getRadius(center, cluster)
+      @circle = new google.maps.Circle(options)
+      google.maps.event.addListener @circle, 'click', => (this._onClick())
 
-    if cluster.parent.lat
+    if !@line && @lines && cluster.parent.lat
       parent = new google.maps.LatLng(cluster.parent.lat, cluster.parent.lng)
       @line = new google.maps.Polyline
         path:           [center, parent]
@@ -35,7 +36,7 @@ tsuga.Views.Cluster = Backbone.Model.extend
         strokeOpacity:  0.2
         strokeWeight:   2
 
-    if cluster.weight > 1
+    if !@text && cluster.weight > 1
       textOptions =
         content:        cluster.weight,
         boxClass:       'cluster-info'
@@ -47,8 +48,9 @@ tsuga.Views.Cluster = Backbone.Model.extend
         enableEventPropagation: true
       @text = new InfoBox(textOptions)
 
-    google.maps.event.addListener @circle, 'click', => (this._onClick())
 
+  render: ->
+    this._prepare()
     @circle.setMap(@map)
     @line.setMap(@map)  if @line
     @text.open(@map)    if @text
@@ -60,6 +62,15 @@ tsuga.Views.Cluster = Backbone.Model.extend
     @line.setMap(null)  if @line
     @text.setMap(null)  if @text
 
+
+  setShowLines: (value) ->
+    if @lines = value
+      this.render()
+    else
+      @line.setMap(null)  if @line
+      # this.unrender()
+      @line = null
+      # this.render()
 
 
   _onClick: () ->

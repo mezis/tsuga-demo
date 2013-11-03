@@ -1,18 +1,25 @@
 tsuga.Routers.Map = Backbone.Router.extend
 
   routes: {
-    ':zoom/:lat/:lng': '_panMapAction',
-    '*path':           '_panMapDefaultAction'
+    ':zoom/lat::lat,lng::lng/*flags': '_panMapAction',
+    '*path':                          '_panMapDefaultAction'
   }
 
   initialize: ->
+    @flags        = new tsuga.Models.Flags()
     @map          = new tsuga.Models.Map()
     @view         = new tsuga.Views.Map({ model: @map })
     @clusters     = new tsuga.Collections.Clusters()
-    @clustersView = new tsuga.Views.Clusters({ parent: @view, clusters: @clusters })
+    @clustersView = new tsuga.Views.Clusters
+      parent:   @view
+      clusters: @clusters
+      lines:    @flags.get('lines')
 
     this.listenTo @map,      'change:position', this._updateNavigation
     this.listenTo @map,      'change:position', this._updateClusters
+
+    this.listenTo @flags,    'change:lines',    => (@clustersView.setShowLines(@flags.get('lines')))
+    this.listenTo @flags,    'change',          this._updateNavigation
 
     this.listenToOnce @view, 'idle:viewport', =>
       console.log '*** first update'
@@ -28,8 +35,9 @@ tsuga.Routers.Map = Backbone.Router.extend
     @map.set 'position', @map.defaults().position
 
 
-  _panMapAction: (zoom, lat, lng) ->
+  _panMapAction: (zoom, lat, lng, flags) ->
     console.log 'tsuga.Routers.Map#_panMapAction'
+    @flags.parse(flags)
     @map.set 'position',
       zoom: parseInt(zoom)
       lat:  parseFloat(lat)
@@ -39,7 +47,10 @@ tsuga.Routers.Map = Backbone.Router.extend
   _updateNavigation: ->
     console.log 'tsuga.Routers.Map#_updateNavigation'
     position = @map.get('position')
-    this.navigate "#{position.zoom}/#{position.lat}/#{position.lng}",
+    lat = sprintf('%.4f', position.lat)
+    lng = sprintf('%.4f', position.lng)
+    flags = @flags.serialize()
+    this.navigate "#{position.zoom}/lat:#{lat},lng:#{lng}/#{flags}",
       trigger: false
 
 

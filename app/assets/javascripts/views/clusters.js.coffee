@@ -1,10 +1,10 @@
 # not a proper backbone view, as there is no backing DOM node
 tsuga.Views.Clusters = Backbone.Model.extend
-
   initialize: (options)->
-    @clusters = options.clusters # tsuga.Collections.Clusters
-    @parent   = options.parent   # tsuga.Views.Map
-    @views    = {}               # of tsuga.Views.Cluster
+    @clusters  = options.clusters # tsuga.Collections.Clusters
+    @parent    = options.parent   # tsuga.Views.Map
+    @views     = {}               # of tsuga.Views.Cluster
+    @showLines = options.lines
 
     this.listenTo @clusters, 'add',    this._addCluster
     this.listenTo @clusters, 'remove', this._removeCluster
@@ -14,12 +14,18 @@ tsuga.Views.Clusters = Backbone.Model.extend
   render: ->
     null
 
+  setShowLines: (value) ->
+    @showLines = value
+    for id, cluster of @views
+      cluster.setShowLines(value)
+
 
   _addCluster: (cluster, collection) ->
     # console.log '_addCluster'
     view = new tsuga.Views.Cluster
       cluster:  cluster
       parent:   @parent
+      lines:    @showLines
     view.render()
     @views[cluster.id] = view
 
