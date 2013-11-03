@@ -10,7 +10,6 @@ tsuga.Views.Clusters = Backbone.Model.extend
     this.listenTo @clusters, 'remove', this._removeCluster
     this.listenTo @clusters, 'all',    this._updateCounters
 
-
   render: ->
     null
 

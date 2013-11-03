@@ -58,7 +58,9 @@ tsuga.Routers.Map = Backbone.Router.extend
     console.log 'tsuga.Routers.Map#_updateClusters'
     @clusters.fetch
       data: this._getRect()
-      success: => (this._updatePoints())
+      success: =>
+        @clusters.trigger('update')
+        this._updatePoints()
 
 
   _updatePoints: (collection, response, options) ->

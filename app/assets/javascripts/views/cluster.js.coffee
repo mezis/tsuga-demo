@@ -7,8 +7,9 @@ tsuga.Views.Cluster = Backbone.Model.extend
     @parent   = options.parent  # tsuga.Views.Map
     @map      = @parent.map     # google.maps.map
 
-    this.listenTo @flags, 'change:labels', this._onChangeFlags
-    this.listenTo @flags, 'change:lines',  this._onChangeFlags
+    this.listenTo @flags,   'change:labels',     this._onChangeFlags
+    this.listenTo @flags,   'change:lines',      this._onChangeFlags
+    this.listenTo @cluster, 'change:relWeight',  this._updateColor
 
     @circle   = null
     @line     = null
@@ -18,12 +19,13 @@ tsuga.Views.Cluster = Backbone.Model.extend
     # console.log 'tsuga.Views.Cluster#render'
     cluster   = @cluster.attributes
     center    = new google.maps.LatLng(cluster.lat, cluster.lng)
-    fillColor = if (cluster.weight == 1) then '#ff00ff' else '#ff0000'
 
     if !@circle
       options =
-        strokeOpacity:  0.0
-        fillColor:      fillColor
+        strokeColor:    'gray'
+        strokeOpacity:  0.8
+        strokeWeight:   2
+        fillColor:      'gray'
         fillOpacity:    0.2
         center:         center
         radius:         this._getRadius(center, cluster)
@@ -35,7 +37,7 @@ tsuga.Views.Cluster = Backbone.Model.extend
       @line = new google.maps.Polyline
         path:           [center, parent]
         geodesic:       true
-        strokeColor:    fillColor,
+        strokeColor:    'red',
         strokeOpacity:  0.2
         strokeWeight:   2
 
@@ -76,6 +78,14 @@ tsuga.Views.Cluster = Backbone.Model.extend
       @text.setMap(null) if @text
       @text = null
     this.render()
+
+
+  _updateColor: () ->
+    hue = (60 - @cluster.get('relWeight') * 60).toFixed()
+    color = "hsl(#{hue},100%,50%)"
+    @circle.setOptions
+      fillColor:   color
+      strokeColor: color
 
 
   _onClick: () ->
