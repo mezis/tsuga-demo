@@ -29,7 +29,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.0.0'
 
 # styling
-gem 'compass-rails', '~> 2.0.alpha.0'
+gem 'compass-rails'
 gem 'bootstrap-sass', '~> 3.0.0.0.rc'
 gem "font-awesome-rails"
 
